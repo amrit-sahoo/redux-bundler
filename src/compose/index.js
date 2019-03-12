@@ -16,6 +16,7 @@ import {
   IS_PROD,
   selectorNameToValueName
 } from '../utils'
+import console = require('console');
 
 const bindSelectorsToStore = (store, selectors) => {
   for (const key in selectors) {
@@ -95,15 +96,18 @@ const devTools = () =>
     ? window.__REDUX_DEVTOOLS_EXTENSION__()
     : a => a
 
-const composeBundles = (...bundles) => {
+const composeBundles = (...bundles, persistedReducer, middleware) => {
   // build out object of extracted bundle info
   const firstChunk = createChunk(bundles)
+  console.log(bundles);
 
   return data => {
     // actually init our store
     const store = createStore(
-      enhanceReducer(combineReducers(firstChunk.reducers)),
+      enhanceReducer(combineReducers(firstChunk.reducers, persistedReducer)),
       data,
+      middleware,
+      // persistedReducer,
       compose(
         customApplyMiddleware(
           ...[
